@@ -34,14 +34,7 @@ void	print_error(char *ptr1, char *ptr2, char *ptr3)
 
 void	changetitle(void)
 {
-	// char	cwd[256];
-
-	// if (core->title.full_title)
-	// 	free(core->title.full_title);
-	// core->title.full_title = NULL;
-	// ownstrjoin(&core->title.full_title, core->title.head);
-	// ownstrjoin(&core->title.full_title, (char *)getcwd(cwd, 256));
-	// ownstrjoin(&core->title.full_title, "$ ");
+	return ;
 }
 
 int	updateenv(t_core *core, char *envname, char *newarg)
