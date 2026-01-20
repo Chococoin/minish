@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils3.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 17:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/11 14:30:46 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:26:09 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	free_list_env(t_env *env)
 		env = next;
 	}
 }
+
 void	free_core(t_core *core)
 {
 	if (core->cmd)

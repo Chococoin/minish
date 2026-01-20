@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell2.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 12:11:44 by siellage          #+#    #+#             */
-/*   Updated: 2026/01/11 14:28:12 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:20:39 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,8 @@ typedef struct s_core
 	t_cmd		*cmds;		
 }	t_core;
 
-extern t_core	core;
-
 int				isbuiltin(char *cmd);
-void			runbuiltin(t_core *core, t_cmdlist *cmdnode, int builtin, int *fd,
-					int fd_index);
+void			runbuiltin(t_core *core, t_cmdlist *node, int bltn);
 void			runecho(t_cmdlist *cmdnode);
 void			runenv(t_cmdlist *cmdnode);
 int				updateenv(char *envname, char *newarg);

@@ -30,6 +30,28 @@ int	isallnumeric(char *text)
 	return (1);
 }
 
+static void	cleanup_and_exit(t_core *core, t_cmdlist *cmdnode, int exit_code)
+{
+	free_core(core);
+	cmd_clear(&core->cmds);
+	free_env(core->my_env);
+	free_cmdlist_adapter(cmdnode);
+	close(core->saved_stdin);
+	close(core->saved_stdout);
+	exit(exit_code);
+}
+
+static int	get_exit_code(t_cmdlist *cmdnode)
+{
+	if (!isallnumeric(cmdnode->path[1]))
+	{
+		print_error("-bash: exit: ", cmdnode->path[1],
+			": numeric argument required\n");
+		return (2);
+	}
+	return (ft_atoi(cmdnode->path[1]));
+}
+
 void	runexit(t_core *core, t_cmdlist *cmdnode)
 {
 	int		exit_code;
@@ -43,23 +65,8 @@ void	runexit(t_core *core, t_cmdlist *cmdnode)
 		core->exec_output = 1;
 		return ;
 	}
-	if (arraylen == 2)
-	{
-		if (!isallnumeric(cmdnode->path[1]))
-		{
-			print_error("exit\n-bash: exit: ", cmdnode->path[1],
-				": numeric argument required\n");
-			exit_code = 2;
-		}
-		else
-			exit_code = ft_atoi(cmdnode->path[1]);
-	}
 	write(1, "exit\n", 5);
-	free_core(core);
-	cmd_clear(&core->cmds);
-	free_env(core->my_env);
-	free_cmdlist_adapter(cmdnode);
-	close(core->saved_stdin);
-	close(core->saved_stdout);
-	exit(exit_code);
+	if (arraylen == 2)
+		exit_code = get_exit_code(cmdnode);
+	cleanup_and_exit(core, cmdnode, exit_code);
 }

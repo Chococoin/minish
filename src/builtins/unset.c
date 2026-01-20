@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 15:34:23 by siellage          #+#    #+#             */
-/*   Updated: 2026/01/11 14:29:12 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:27:04 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,7 @@ void	rununset(t_core *core, t_cmdlist *cmdnode)
 		while (*(++tempname))
 		{
 			if (!envargcontrol(core, *tempname, 0))
-			{
-				// print_error("-bash: unset: `", *tempname,
-				// 	"': not a valid identifier\n");
-				// core->exec_output = 1;
 				continue ;
-			}
 			else
 				deleteenv(core, *tempname);
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 21:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/11/17 12:15:59 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:17:51 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ static void	exec_pipe_cmd(t_core *core, t_pipe_ctx *ctx)
 
 	setup_child_signals();
 	setup_pipe_fds(ctx->cmd_i, ctx->n_cmds, ctx->pipes);
-	if (ctx->cmd->redirs && apply_redirections(ctx->cmd->redirs) < 0)
+	if (ctx->cmd->redirs && apply_redirections(ctx->cmd->redirs,
+			ctx->envp, core->exec_output) < 0)
 		exit(1);
 	if (isbuiltin(ctx->cmd->argv[0]))
 		exit(execute_builtin_simple(core, ctx->cmd));
@@ -48,40 +49,57 @@ static void	exec_pipe_cmd(t_core *core, t_pipe_ctx *ctx)
 	exit(127);
 }
 
+static int	wait_pipeline(pid_t last_pid, int n_cmds)
+{
+	pid_t	pid;
+	int		status;
+	int		last_status;
+
+	last_status = 0;
+	while (n_cmds-- > 0)
+	{
+		pid = wait(&status);
+		if (pid == last_pid && WIFEXITED(status))
+			last_status = WEXITSTATUS(status);
+		else if (pid == last_pid && WIFSIGNALED(status))
+			last_status = 128 + WTERMSIG(status);
+	}
+	return (last_status);
+}
+
+static pid_t	fork_pipeline(t_core *core, t_pipe_ctx *ctx)
+{
+	pid_t	pid;
+	pid_t	last_pid;
+
+	last_pid = -1;
+	while (ctx->cmd)
+	{
+		pid = fork();
+		if (pid == 0)
+			exec_pipe_cmd(core, ctx);
+		last_pid = pid;
+		ctx->cmd = ctx->cmd->next;
+		ctx->cmd_i++;
+	}
+	return (last_pid);
+}
+
 int	execute_pipeline(t_core *core, t_cmd *first, char **envp)
 {
 	t_pipe_ctx	ctx;
-	pid_t		pid;
+	pid_t		last_pid;
+	int			n_pipes;
 
 	ctx.n_cmds = count_cmds(first);
-	ctx.pipes = create_pipes(ctx.n_cmds - 1);
+	n_pipes = ctx.n_cmds - 1;
+	ctx.pipes = create_pipes(n_pipes);
 	if (!ctx.pipes && ctx.n_cmds > 1)
 		return (1);
 	ctx.cmd = first;
 	ctx.envp = envp;
 	ctx.cmd_i = 0;
-	while (ctx.cmd)
-	{
-		pid = fork();
-		if (pid == 0)
-			exec_pipe_cmd(core, &ctx);
-		ctx.cmd = ctx.cmd->next;
-		ctx.cmd_i++;
-	}
-	close_pipes(ctx.pipes, ctx.n_cmds - 1);
-	while (--ctx.n_cmds >= 0)
-		wait(NULL);
-	free_pipes(ctx.pipes, ctx.n_cmds - 1);
-	return (0);
-}
-void free_pipes(int **pipes, int n_pipes)
-{
-    int i;
-	i = 0;
-    while (i < n_pipes)
-    {
-        free(pipes[i]);
-        i++;
-    }
-    free(pipes);
+	last_pid = fork_pipeline(core, &ctx);
+	close_pipes(ctx.pipes, n_pipes);
+	return (wait_pipeline(last_pid, ctx.n_cmds));
 }

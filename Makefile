@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: siellage <siellage@student.42.fr>          +#+  +:+       +#+         #
+#    By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/11 18:10:13 by glugo-mu          #+#    #+#              #
-#    Updated: 2025/11/17 10:22:34 by siellage         ###   ########.fr        #
+#    Updated: 2026/01/20 11:19:46 by glugo-mu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,16 +21,17 @@ SRC =	src/main.c src/env/copy_env.c src/utils/utils.c \
 		src/execution/executor.c src/execution/path_resolver.c \
 		src/execution/pipeline.c src/execution/pipe.c \
 		src/execution/pipe_utils.c \
-		src/execution/redirections.c \
+		src/execution/redirections.c src/execution/heredoc.c \
 		src/signals/signals.c \
 		src/parsing/split_input.c src/parsing/command_builder.c \
 		src/parsing/command_utils.c src/parsing/token_list.c \
 		src/parsing/token_utils.c src/parsing/tokenizer.c src/parsing/expand.c \
 		src/parsing/expand_utils.c src/parsing/validate.c \
-		src/builtins/builtin.c src/builtins/cd.c src/builtins/createdup.c \
+		src/builtins/builtin.c src/builtins/cd.c src/builtins/cd_utils.c \
+		src/builtins/createdup.c \
 		src/builtins/echo.c src/builtins/env.c src/builtins/envutils.c \
 		src/builtins/envutils2.c src/builtins/envutils3.c \
-		src/builtins/exit.c src/builtins/export.c \
+		src/builtins/exit.c src/builtins/export.c src/builtins/export_utils.c \
 		src/builtins/pwd.c src/builtins/unset.c src/builtins/utilits.c \
 		src/builtins/utilits2.c src/builtins/builtins_utils.c \
 		src/builtins/builtins_utils2.c src/builtins/builtins_utils3.c \

@@ -1,0 +1,4 @@
+obj/
+minishell
+*.o
+.DS_Store

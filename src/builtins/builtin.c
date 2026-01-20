@@ -31,10 +31,8 @@ int	isbuiltin(char *cmd)
 	return (0);
 }
 
-void	runbuiltin(t_core *core, t_cmdlist *cmdnode, int builtin, int *fd, int fd_index)
+void	runbuiltin(t_core *core, t_cmdlist *cmdnode, int builtin)
 {
-	if (fd)
-		createdup(core, cmdnode, fd, fd_index);
 	if (builtin == ECHO)
 		runecho(cmdnode);
 	else if (builtin == CD)

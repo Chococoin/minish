@@ -3,27 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 20:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/12/19 11:52:02 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:18:12 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/wait.h>
 
-static void	exec_child( t_core *core, char *path, t_cmd *cmd, char **envp, t_cmd **cmds)
+static void	exec_child(t_core *core, char *path, t_cmd *cmd, char **envp)
 {
 	setup_child_signals();
-	if (cmd->redirs && apply_redirections(cmd->redirs) < 0)
+	if (cmd->redirs && apply_redirections(cmd->redirs, envp,
+			core->exec_output) < 0)
 		exit(1);
 	execve(path, cmd->argv, envp);
 	perror("minishell");
-	free(path);
-	free_env(envp);
-	cmd_clear(cmds);
-	free_list_env(core->env_table);
 	exit(127);
 }
 
@@ -37,7 +34,7 @@ static int	wait_child(pid_t pid)
 	return (1);
 }
 
-int	execute_external(t_cmd *cmd, char **envp)
+int	execute_external(t_core *core, t_cmd *cmd, char **envp)
 {
 	pid_t	pid;
 	char	*path;
@@ -54,7 +51,7 @@ int	execute_external(t_cmd *cmd, char **envp)
 	if (pid == -1)
 		return (free(path), 1);
 	if (pid == 0)
-		exec_child(&core, path, cmd, envp, &cmd);
+		exec_child(core, path, cmd, envp);
 	free(path);
 	return (wait_child(pid));
 }

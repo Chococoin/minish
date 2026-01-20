@@ -50,62 +50,49 @@ void	cdsinglearg(t_core *core)
 	core->exec_output |= 1;
 }
 
-void	cddoublearg(t_core *core, t_cmdlist *cmdnode)
+static char	*get_oldpwd(t_core *core)
 {
-	if (strcmp(cmdnode->path[1], "~") == 0)
+	t_env	*env;
+
+	env = core->env_table;
+	while (env)
 	{
-        cdsinglearg(core);
-        return;
-    }
-	if (!changedir(core, cmdnode->path[1]))
+		if (str_compare("OLDPWD", env->env_name))
+			return (env->content);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+static void	cd_to_oldpwd(t_core *core)
+{
+	char	*oldpwd;
+
+	oldpwd = get_oldpwd(core);
+	if (!oldpwd)
 	{
-		print_error("--bash: cd: ", cmdnode->path[1],
-			": No such file or directory\n");
+		print_error("-bash: cd: OLDPWD not set\n", NULL, NULL);
 		core->exec_output = 1;
 		return ;
 	}
+	oldpwd = ft_strdup(oldpwd);
+	if (!oldpwd)
+		return ;
+	if (changedir(core, oldpwd))
+		printf("%s\n", oldpwd);
+	free(oldpwd);
 }
 
-int	changedir(t_core *core, char *path)
+void	cddoublearg(t_core *core, t_cmdlist *cmdnode)
 {
-	char	pwd[256];
-	int		ispwdaccess;
-	char	*oldpwd;
-	int		error;
-
-	oldpwd = ft_strdup(getcwd(pwd, 256));
-	error = chdir(path);
-	if (error == -1)
+	if (strcmp(cmdnode->path[1], "~") == 0)
+		cdsinglearg(core);
+	else if (strcmp(cmdnode->path[1], "-") == 0)
+		cd_to_oldpwd(core);
+	else if (!changedir(core, cmdnode->path[1]))
 	{
-		if (oldpwd)
-			free(oldpwd);
-		return (0);
+		print_error("-bash: cd: ", cmdnode->path[1],
+			": No such file or directory\n");
+		core->exec_output = 1;
 	}
-	ispwdaccess = updatepwdfromexport(core, "PWD", getcwd(pwd, 256));
-	if (ispwdaccess)
-		updatepwdfromexport(core, "OLDPWD", oldpwd);
-	else
-		deleteenv(core, "OLDPWD");
-	if (oldpwd)
-		free(oldpwd);
-	sync_my_env(core);
-	changetitle();
-	return (1);
-}
-
-int	updatepwdfromexport(t_core *core, char *pwdname, char *pwdcontent)
-{
-	char	*temppwd;
-
-	if (!updateenv(core, pwdname, pwdcontent))
-	{
-		temppwd = NULL;
-		ownstrjoin(&temppwd, pwdname);
-		straddchar(&temppwd, '=');
-		ownstrjoin(&temppwd, pwdcontent);
-		addnewenv(&core->env_table, temppwd);
-		free(temppwd);
-		return (0);
-	}
-	return (1);
 }

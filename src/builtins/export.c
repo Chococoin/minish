@@ -12,8 +12,9 @@
 
 #include "minishell.h"
 
-//void	singleexportarg(t_cmdlist *cmdnode);
-//void	doubleexportarg(char *envcmd);
+int		count_env_vars(t_env *env);
+void	sort_env_array(t_env **arr, int len);
+void	print_export_var(t_env *env, int fd);
 
 int	runexport(t_core *core, t_cmdlist *cmdnode)
 {
@@ -36,24 +37,29 @@ int	runexport(t_core *core, t_cmdlist *cmdnode)
 
 void	singleexportarg(t_core *core, t_cmdlist *cmdnode)
 {
+	t_env	**arr;
 	t_env	*env;
+	int		len;
+	int		i;
 
+	len = count_env_vars(core->env_table);
+	if (len == 0)
+		return ;
+	arr = malloc(sizeof(t_env *) * len);
+	if (!arr)
+		return ;
 	env = core->env_table;
+	i = 0;
 	while (env)
 	{
-		write(cmdnode->outfile, "declare -x ", 11);
-		write(cmdnode->outfile, env->env_name, ft_strlen(env->env_name));
-		if (!env->content)
-		{
-			write(cmdnode->outfile, "\n", 1);
-			env = env->next;
-			continue ;
-		}
-		write(cmdnode->outfile, "=\"", 2);
-		write(cmdnode->outfile, env->content, ft_strlen(env->content));
-		write(cmdnode->outfile, "\"\n", 2);
+		arr[i++] = env;
 		env = env->next;
 	}
+	sort_env_array(arr, len);
+	i = 0;
+	while (i < len)
+		print_export_var(arr[i++], cmdnode->outfile);
+	free(arr);
 }
 
 void	doubleexportarg(t_core *core, char *envcmd)
@@ -78,22 +84,4 @@ void	doubleexportarg(t_core *core, char *envcmd)
 	if (!isequal)
 		updateenv(core, envcmd, NULL);
 	free(tempenvname);
-}
-
-int	changeenv(t_core *core, char *envname, char *arg, int isequal)
-{
-	t_env	*env;
-
-	env = core->env_table;
-	while (env)
-	{
-		if (str_compare(envname, env->env_name))
-		{
-			if (isequal)
-				updateenv(core, envname, arg);
-			return (1);
-		}
-		env = env->next;
-	}
-	return (0);
 }
