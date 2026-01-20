@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 17:59:21 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/11 14:31:07 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/20 11:20:09 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,25 +146,21 @@ typedef struct s_core
 	int			saved_stdin;
 }	t_core;
 
-extern t_core	core;
-
-
 void			free_cmdlist_adapter(t_cmdlist *cmdlist);
 int				isbuiltin(char *cmd);
-void			runbuiltin(t_core *core, t_cmdlist *cmdnode, int builtin, int *fd,
-					int fd_index);
+void			runbuiltin(t_core *core, t_cmdlist *node, int bltn);
 void			runecho(t_cmdlist *cmdnode);
-void		runenv(t_core *core, t_cmdlist *cmdnode);
+void			runenv(t_core *core, t_cmdlist *cmdnode);
 int				updateenv(t_core *core, char *envname, char *newarg);
 void			runpwd(t_cmdlist *cmdnode);
 void			runcd(t_core *core, t_cmdlist *cmdnode);
 void			cdsinglearg(t_core *core);
 void			cddoublearg(t_core *core, t_cmdlist *cmd_node);
 int				changedir(t_core *core, char *path);
-int				updatepwdfromexport(t_core *core, char *pwd_name, char *pwd_content);
+int				updatepwdfromexport(t_core *core, char *name, char *cnt);
 void			rununset(t_core *core, t_cmdlist *cmdnode);
 void			deleteenv(t_core *core, char *name);
-void		createdup(t_core *core, t_cmdlist *cmd_list, int *fd, int fdindex);
+void			createdup(t_core *core, t_cmdlist *lst, int *fd, int idx);
 int				getarraylen(char **array);
 void			print_error(char *ptr1, char *ptr2, char *ptr3);
 void			changetitle(void);
@@ -226,11 +222,10 @@ char			*remove_quotes_and_get_mode(const char *str, int *quote_mode);
 t_cmd			*commands_from_tokens(t_token *tokens, char **error);
 void			cmd_clear(t_cmd **cmds);
 char			*find_in_path(const char *cmd, char **envp);
-int				execute_external(t_cmd *cmd, char **envp);
+int				execute_external(t_core *core, t_cmd *cmd, char **envp);
 int				execute_pipeline(t_core *core, t_cmd *first, char **envp);
-void			free_pipes(int **pipes, int n_pipes);
 int				execute_builtin_simple(t_core *core, t_cmd *cmd);
-int				apply_redirections(t_redir *redirs);
+int				apply_redirections(t_redir *redirs, char **envp, int es);
 void			setup_signals(void);
 void			setup_child_signals(void);
 
