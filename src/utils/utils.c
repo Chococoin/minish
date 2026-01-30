@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 14:33:32 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/10/31 17:34:44 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 15:49:22 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void	print_env(char **my_env)
 void	free_resources(char *input, char **parts, char *original)
 {
 	if (parts)
-		free(parts);
+		free_env(parts);
 	if (original)
 		free(original);
 	if (input)

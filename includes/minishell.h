@@ -6,7 +6,7 @@
 /*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 17:59:21 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/30 15:08:31 by siellage         ###   ########.fr       */
+/*   Updated: 2026/01/30 16:00:17 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ typedef struct s_split_ctx
 	size_t	count;
 	size_t	capacity;
 	char	quote_error;
+
+	int		start;
+	int		end;
 }	t_split_ctx;
 
 typedef enum e_token_type
