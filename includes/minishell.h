@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 17:59:21 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:20:09 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:31:23 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft.h"
+# include <signal.h>
+# include <readline/readline.h>
 
 # define ECHO 1
 # define CD 2
@@ -146,6 +148,7 @@ typedef struct s_core
 	int			saved_stdin;
 }	t_core;
 
+void			close_pipes(int **pipes, int n_pipes);
 void			free_cmdlist_adapter(t_cmdlist *cmdlist);
 int				isbuiltin(char *cmd);
 void			runbuiltin(t_core *core, t_cmdlist *node, int bltn);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 21:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:17:51 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:26:16 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <sys/wait.h>
 
 int		count_cmds(t_cmd *cmd);
-void	close_pipes(int **pipes, int n_pipes);
 int		**create_pipes(int n_pipes);
 void	close_all_pipes(int **pipes, int n_pipes);
 
@@ -27,25 +26,52 @@ static void	setup_pipe_fds(int i, int n_cmds, int **pipes)
 	close_all_pipes(pipes, n_cmds - 1);
 }
 
-static void	exec_pipe_cmd(t_core *core, t_pipe_ctx *ctx)
+void ft_free_matrix(int **mat)
+{
+	int i = 0;
+	while (mat[i])
+	{
+		i++;
+	}
+	int len = i;
+	i = 0;
+	while (i < len)
+	{
+		free(mat[i]);
+		i++;
+	}
+	free(mat);
+}
+
+
+static void	exec_pipe_cmd(t_core *core, t_pipe_ctx *ctx, int n_pipes)
 {
 	char	*path;
+	int		status;
 
 	setup_child_signals();
 	setup_pipe_fds(ctx->cmd_i, ctx->n_cmds, ctx->pipes);
 	if (ctx->cmd->redirs && apply_redirections(ctx->cmd->redirs,
 			ctx->envp, core->exec_output) < 0)
-		exit(1);
+		return (close_pipes(ctx->pipes, n_pipes), free_core(core), exit(1));
 	if (isbuiltin(ctx->cmd->argv[0]))
-		exit(execute_builtin_simple(core, ctx->cmd));
+	{
+		status = execute_builtin_simple(core, ctx->cmd);
+	close_pipes(ctx->pipes, n_pipes);
+		return (free_core(core), exit(status));
+	}
 	path = find_in_path(ctx->cmd->argv[0], ctx->envp);
 	if (!path)
 	{
 		printf("minishell: %s: command not found\n", ctx->cmd->argv[0]);
+		close_pipes(ctx->pipes, n_pipes);
+		free_core(core);
 		exit(127);
 	}
 	execve(path, ctx->cmd->argv, ctx->envp);
 	perror("minishell");
+	close_pipes(ctx->pipes, n_pipes);
+	free_core(core);
 	exit(127);
 }
 
@@ -67,7 +93,7 @@ static int	wait_pipeline(pid_t last_pid, int n_cmds)
 	return (last_status);
 }
 
-static pid_t	fork_pipeline(t_core *core, t_pipe_ctx *ctx)
+static pid_t	fork_pipeline(t_core *core, t_pipe_ctx *ctx, int n_pipes)
 {
 	pid_t	pid;
 	pid_t	last_pid;
@@ -77,7 +103,7 @@ static pid_t	fork_pipeline(t_core *core, t_pipe_ctx *ctx)
 	{
 		pid = fork();
 		if (pid == 0)
-			exec_pipe_cmd(core, ctx);
+			exec_pipe_cmd(core, ctx, n_pipes);
 		last_pid = pid;
 		ctx->cmd = ctx->cmd->next;
 		ctx->cmd_i++;
@@ -99,7 +125,7 @@ int	execute_pipeline(t_core *core, t_cmd *first, char **envp)
 	ctx.cmd = first;
 	ctx.envp = envp;
 	ctx.cmd_i = 0;
-	last_pid = fork_pipeline(core, &ctx);
+	last_pid = fork_pipeline(core, &ctx, n_pipes);
 	close_pipes(ctx.pipes, n_pipes);
 	return (wait_pipeline(last_pid, ctx.n_cmds));
 }

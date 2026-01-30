@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 20:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:18:12 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:32:30 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,19 @@
 
 static void	exec_child(t_core *core, char *path, t_cmd *cmd, char **envp)
 {
-	setup_child_signals();
+	signal(SIGINT, SIG_IGN);
 	if (cmd->redirs && apply_redirections(cmd->redirs, envp,
-			core->exec_output) < 0)
+	core->exec_output) < 0)
+	{
+		free_core(core);
 		exit(1);
+	}
+	setup_child_signals();
 	execve(path, cmd->argv, envp);
 	perror("minishell");
+	free(path);
+	free_env(envp);
+	free_core(core);
 	exit(127);
 }
 
@@ -47,6 +54,8 @@ int	execute_external(t_core *core, t_cmd *cmd, char **envp)
 		printf("minishell: %s: command not found\n", cmd->argv[0]);
 		return (127);
 	}
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	pid = fork();
 	if (pid == -1)
 		return (free(path), 1);

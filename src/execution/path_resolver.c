@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_resolver.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 20:30:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/11/05 20:30:00 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:16:22 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,18 @@
 
 static int	is_executable(const char *path)
 {
-	if (access(path, F_OK) == 0)
+	int			fd;
+
+	if (access(path, F_OK | X_OK) == 0)
 	{
-		if (access(path, X_OK) == 0)
-			return (1);
+		fd = open(path, O_DIRECTORY);
+		if (fd != -1)
+		{
+			close(fd);
+			return (0);
+		}
+		// TO DO controllo ./ e . e ./././././.
+		return (1);
 	}
 	return (0);
 }
@@ -26,6 +34,7 @@ static char	*try_path(const char *dir, const char *cmd)
 {
 	char	*full_path;
 	char	*temp;
+
 
 	temp = ft_strjoin(dir, "/");
 	if (!temp)

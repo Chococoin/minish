@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 18:17:15 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:16:44 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:22:52 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,12 @@ static void	handle_tokens(t_core *core, t_token *tok, int *es, char **res)
 	cmds = commands_from_tokens(tok, NULL);
 	core->cmds = cmds;
 	token_clear(&tok);
-	free_resources(res[0], (char **)res[1], res[2]);
+	(void)res;
+	// free_resources(res[0], (char **)res[1], res[2]);
 	if (cmds)
 	{
 		*es = execute_cmd(core, cmds, core->my_env);
-		cmd_clear(&cmds);
+		cmd_clear(&core->cmds);
 	}
 }
 
@@ -80,13 +81,9 @@ static int	process_loop(t_core *core, int *exit_status)
 	if (*input)
 		add_history(input);
 	tokens = process_input(input, &parts, &original);
+	free_resources(input, (char **)parts, original);
 	if (tokens)
-	{
-		res[0] = input;
-		res[1] = (char *)parts;
-		res[2] = original;
 		handle_tokens(core, tokens, exit_status, res);
-	}
 	return (1);
 }
 
@@ -111,7 +108,6 @@ int	main(int argc, char **argv, char **envp)
 	setup_signals();
 	while (process_loop(&core, &exit_status))
 		;
-	free_env(core.my_env);
 	free_core(&core);
 	return (0);
 }

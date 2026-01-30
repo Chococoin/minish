@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_builder.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 12:25:41 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/10/15 19:39:59 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:24:47 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ t_cmd	*commands_from_tokens(t_token *tokens, char **error)
 	{
 		cmd = cmd_new();
 		if (!cmd || !fill_command(cmd, &cursor, error))
-			return (cmd_clear(&cmd), cmd_clear(&head), NULL);
+			return (free(cmd), cmd_clear(&head), NULL);
 		if (!head)
 			head = cmd;
 		else

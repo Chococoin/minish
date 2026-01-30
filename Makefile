@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+         #
+#    By: siellage <siellage@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/11 18:10:13 by glugo-mu          #+#    #+#              #
-#    Updated: 2026/01/20 11:19:46 by glugo-mu         ###   ########.fr        #
+#    Updated: 2026/01/30 14:36:03 by siellage         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,7 +74,7 @@ clean:
 	rm -f $(OBJ)
 
 val: all clean
-		valgrind --quiet --track-origins=yes --leak-check=full --show-leak-kinds=all --track-fds=yes --trace-children=yes --suppressions=/home/siellage/Desktop/minishell/val.supp ./minishell
+		valgrind --quiet --track-origins=yes --leak-check=full --show-leak-kinds=all --track-fds=yes --trace-children=yes --suppressions=$(PWD)/val.supp ./minishell
 
 fclean: clean
 	rm -f $(NAME)
@@ -99,10 +99,6 @@ gdb: debug
 asan: CFLAGS += -g -O0 -fsanitize=address,undefined -fno-omit-frame-pointer
 asan: re
 	@echo "Run ./$(NAME) to see ASAN/UBSAN output."
-
-valgrind: debug
-	@echo "Running valgrind --leak-check=full --track-origins=yes"
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME)
 
 enable-coredump:
 	@echo "To enable core dumps in this shell run: ulimit -c unlimited"

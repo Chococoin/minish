@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 22:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:13:14 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:34:21 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,18 @@ static void	heredoc_loop(int write_fd, const char *delim, char **e, int es)
 	}
 }
 
+void	handle_sigint(int sig)
+{
+	(void)sig;
+	write(STDERR_FILENO, "\n", 1);
+	close(STDIN_FILENO);	
+}
+
 int	handle_heredoc(const char *delimiter, char **envp, int exit_status)
 {
 	int		pipefd[2];
 
+	signal(SIGINT, handle_sigint);
 	if (pipe(pipefd) < 0)
 		return (perror("minishell"), -1);
 	heredoc_loop(pipefd[1], delimiter, envp, exit_status);

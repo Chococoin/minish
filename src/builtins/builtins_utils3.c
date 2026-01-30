@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils3.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 17:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2026/01/20 11:26:09 by glugo-mu         ###   ########.fr       */
+/*   Updated: 2026/01/30 14:18:32 by siellage         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,7 @@ void	free_core(t_core *core)
 	if (core->metachars)
 		free(core->metachars);
 	free_list_env(core->env_table);
+	freeenvcpy(core->my_env);
+	cmd_clear(&core->cmds);
+	free_cmdlist_adapter(core->cmd_table);
 }
