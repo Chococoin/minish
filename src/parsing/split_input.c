@@ -118,7 +118,8 @@ char	**split_input(char *input)
 		if (ctx.quote_error)
 			printf("minishell: unexpected EOF while looking for "
 				"matching `%c'\n", ctx.quote_error);
-		free(ctx.tokens);
+		ctx.tokens[ctx.count] = NULL;
+		free_env(ctx.tokens);
 		return (NULL);
 	}
 	ctx.tokens[ctx.count] = NULL;

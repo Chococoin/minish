@@ -50,6 +50,7 @@ static void	exec_pipe_cmd(t_core *core, t_pipe_ctx *ctx)
 	}
 	execve(path, ctx->cmd->argv, ctx->envp);
 	perror("minishell");
+	free(path);
 	free_core(core);
 	exit(127);
 }

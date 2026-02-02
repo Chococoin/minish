@@ -51,7 +51,7 @@ void	cmd_clear(t_cmd **cmds)
 		next = (*cmds)->next;
 		if ((*cmds)->argv)
 			free_argv((*cmds)->argv);
-		if ((*cmds)->argv)
+		if ((*cmds)->redirs)
 			free_redirs((*cmds)->redirs);
 		if (*cmds)
 			free(*cmds);

@@ -37,6 +37,8 @@ char	**getenvcpy(t_core *core)
 
 	envlen = getenvlen(core);
 	envlist = (char **)malloc(sizeof(char *) * (envlen + 1));
+	if (!envlist)
+		return (NULL);
 	envlist[envlen] = NULL;
 	tempenvlist = core->env_table;
 	while (tempenvlist)
@@ -73,27 +75,27 @@ void	fillenvs(t_core *core, char **env)
 t_env	*addnewenv(t_env **envtable, char *env)
 {
 	t_env	*lastnode;
+	t_env	*node;
 	char	*content;
 
+	node = malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
 	if (!*envtable)
-	{
-		*envtable = (t_env *)malloc(sizeof(t_env));
-		lastnode = *envtable;
-	}
+		*envtable = node;
 	else
 	{
 		lastnode = *envtable;
 		while (lastnode->next)
 			lastnode = lastnode->next;
-		lastnode->next = (t_env *)malloc(sizeof(t_env));
-		lastnode = lastnode->next;
+		lastnode->next = node;
 	}
-	lastnode->env_name = getenvname(env);
-	content = env + ft_strlen(lastnode->env_name);
+	node->env_name = getenvname(env);
+	content = env + ft_strlen(node->env_name);
 	if (*content == '=' && *(content + 1))
-		lastnode->content = ft_strdup(content + 1);
+		node->content = ft_strdup(content + 1);
 	else
-		lastnode->content = NULL;
-	lastnode->next = NULL;
-	return (lastnode);
+		node->content = NULL;
+	node->next = NULL;
+	return (node);
 }

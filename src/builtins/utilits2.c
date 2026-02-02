@@ -30,6 +30,8 @@ void	ownstrjoin(char **dst, char *src)
 		return ;
 	len = get_len(*dst) + get_len(src);
 	ptr = (char *)malloc(sizeof(char) * (len + 1));
+	if (!ptr)
+		return ;
 	ptr[len] = 0;
 	hp = ptr;
 	hd = *dst;
@@ -51,6 +53,8 @@ void	straddchar(char **dst, char c)
 
 	len = ft_strlen(*dst) + 1;
 	ptr = (char *)malloc(sizeof(char) * (len + 1));
+	if (!ptr)
+		return ;
 	hp = ptr;
 	hd = *dst;
 	while (hd && *hd)
