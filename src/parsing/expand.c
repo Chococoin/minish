@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: siellage <siellage@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glugo-mu <glugo-mu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 00:00:00 by glugo-mu          #+#    #+#             */
-/*   Updated: 2025/11/17 11:41:52 by siellage         ###   ########.fr       */
+/*   Updated: 2026/02/02 21:35:11 by glugo-mu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ static char	*expand_variables(const char *str, char **envp, int exit_status,
 			vn = extract_var_name(str + i, &vl);
 			if (vn && vn[0])
 				result = join_str(result, get_var_value(vn, envp, exit_status));
+			else if (!vn || !vn[0])
+				result = join_char(result, '$');
 			free(vn);
 			i += vl;
 		}
